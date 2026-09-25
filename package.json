@@ -1,7 +1,7 @@
 {
   "name": "monitor-theme-mochi",
   "private": true,
-  "version": "1.1.2",
+  "version": "1.2.0",
   "type": "module",
   "description": "Mochi — a monitor status page theme inspired by komari-web-mochi, with a remaining-value module",
   "scripts": {

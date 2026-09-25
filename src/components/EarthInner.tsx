@@ -10,14 +10,58 @@ import {
 import { cssVar } from "./ui"
 
 /** globe.gl 3D 地球：按国家聚合标点，绿=全部在线 黄=部分离线 红=全部离线 */
+type CountryFeature = { properties: { ISO_A2: string; ADM0_A3: string } }
+
+// ne_110m 里少数国家 ISO_A2 是 -99（France/Norway 等），用 alpha-3 兜底映射
+const A3_BY_CC: Record<string, string> = { FR: "FRA", NO: "NOR" }
+
+function featureCC(f: CountryFeature): string | null {
+  const iso = f.properties.ISO_A2
+  if (iso && iso !== "-99") return iso
+  const hit = Object.entries(A3_BY_CC).find(([, a3]) => a3 === f.properties.ADM0_A3)
+  return hit ? hit[0] : null
+}
+
+/** 国家高亮配色：淡色填充 + 同色发光边框（与标点状态一致） */
+function highlightColors(p: CountryPoint): [string, string] {
+  if (p.online === 0) return ["rgba(239, 68, 68, 0.14)", "rgba(239, 68, 68, 0.9)"]
+  if (p.online < p.count) return ["rgba(245, 158, 11, 0.14)", "rgba(245, 158, 11, 0.9)"]
+  return ["rgba(34, 197, 94, 0.14)", "rgba(34, 197, 94, 0.9)"]
+}
+
 export default function EarthInner({ nodes }: { nodes: Node[] }) {
   const boxRef = useRef<HTMLDivElement>(null)
-  const globeRef = useRef<{ _destructor?: () => void; pointsData: (d: CountryPoint[]) => unknown; width: (w: number) => unknown; controls: () => { autoRotate: boolean; autoRotateSpeed: number; enableZoom: boolean } } | null>(null)
+  const globeRef = useRef<{
+    _destructor?: () => void
+    pointsData: (d: CountryPoint[]) => unknown
+    polygonsData: (d: unknown[]) => unknown
+    polygonAltitude: (a: number) => unknown
+    polygonCapColor: (fn: (d: any) => string) => unknown
+    polygonSideColor: (fn: (d: any) => string) => unknown
+    polygonStrokeColor: (fn: (d: any) => string) => unknown
+    polygonsTransitionDuration: (ms: number) => unknown
+    onPolygonClick: (fn: (d: any) => void) => unknown
+    width: (w: number) => unknown
+    controls: () => { autoRotate: boolean; autoRotateSpeed: number; enableZoom: boolean }
+  } | null>(null)
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const [selected, setSelected] = useState<string | null>(null)
+  const [world, setWorld] = useState<CountryFeature[] | null>(null)
 
   const points = useMemo(() => aggregateByCountry(nodes), [nodes])
+
+  // 国界数据（只取有节点的国家做高亮），加载失败静默降级为仅标点
+  useEffect(() => {
+    let on = true
+    fetch("/assets/geo/countries.json")
+      .then((r) => r.json())
+      .then((g) => on && setWorld(g.features))
+      .catch(() => {})
+    return () => {
+      on = false
+    }
+  }, [])
 
   useEffect(() => {
     let disposed = false
@@ -70,7 +114,7 @@ export default function EarthInner({ nodes }: { nodes: Node[] }) {
         }
         window.addEventListener("resize", onResize)
 
-        globeRef.current = globe
+        globeRef.current = globe as unknown as NonNullable<typeof globeRef.current>
         setReady(true)
 
         cleanup = () => {
@@ -97,7 +141,32 @@ export default function EarthInner({ nodes }: { nodes: Node[] }) {
     globeRef.current?.pointsData(points)
   }, [points, ready])
 
-  const toggle = (cc: string) => setSelected(selected === cc ? null : cc)
+  // 有节点的国家边框发光高亮（国界数据/点位任一变化即重算）
+  useEffect(() => {
+    const globe = globeRef.current
+    if (!globe || !world || !ready) return
+    const status = new Map(points.map((p) => [p.cc, p]))
+    const highlights = world.filter((f) => {
+      const cc = featureCC(f)
+      return cc != null && status.has(cc)
+    })
+    const colorsOf = (f: CountryFeature): [string, string] => {
+      const p = status.get(featureCC(f) ?? "")
+      return p ? highlightColors(p) : ["rgba(0,0,0,0)", "rgba(0,0,0,0)"]
+    }
+    globe.polygonsData(highlights)
+    globe.polygonAltitude(0.006)
+    globe.polygonCapColor((f: any) => colorsOf(f)[0])
+    globe.polygonSideColor(() => "rgba(0,0,0,0)")
+    globe.polygonStrokeColor((f: any) => colorsOf(f)[1])
+    globe.polygonsTransitionDuration(400)
+    globe.onPolygonClick((f: any) => {
+      const cc = featureCC(f as CountryFeature)
+      if (cc) setSelected((s) => (s === cc ? null : cc))
+    })
+  }, [world, points, ready])
+
+  const toggle = (cc: string) => setSelected((s) => (s === cc ? null : cc))
 
   return (
     <div>

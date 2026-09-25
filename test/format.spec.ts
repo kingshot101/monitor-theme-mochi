@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { bps, bytes, cycleLabel, flagEmoji, money, osEmoji, pct, uptime } from "@/lib/format"
+import { bps, bytes, cycleLabel, flagEmoji, money, osEmoji, osIcon, osIconPath, pct, uptime } from "@/lib/format"
 
 describe("format", () => {
   it("bytes", () => {
@@ -46,5 +46,26 @@ describe("format", () => {
     expect(osEmoji("darwin")).toBe("🍎")
     expect(osEmoji("android 14")).toBe("🤖")
     expect(osEmoji("debian 12")).toBe("🐧")
+  })
+
+  it("osIcon / osIconPath", () => {
+    expect(osIcon("Debian GNU/Linux 12")).toBe("debian")
+    expect(osIcon("ImmortalWrt 23.05.4")).toBe("openwrt")
+    expect(osIcon("OpenWrt 24.10")).toBe("openwrt")
+    expect(osIcon("Ubuntu 24.04 LTS")).toBe("ubuntu")
+    expect(osIcon("Rocky Linux 9.4")).toBe("rocky")
+    expect(osIcon("AlmaLinux 9.4")).toBe("almalinux")
+    expect(osIcon("Alpine Linux 3.19")).toBe("alpine")
+    expect(osIcon("Proxmox VE 8.2")).toBe("proxmox")
+    expect(osIcon("PVE 8")).toBe("proxmox")
+    expect(osIcon("Windows Server 2022")).toBe("windows")
+    expect(osIcon("darwin 24.0")).toBe("macos")
+    expect(osIcon("Red Hat Enterprise Linux 9")).toBe("rhel")
+    expect(osIcon("Deepin 23")).toBe("deepin")
+    expect(osIconPath("Deepin 23")).toBe("/assets/os/deepin.png")
+    expect(osIconPath("Debian 12")).toBe("/assets/os/debian.svg")
+    expect(osIcon("CentOS Stream")).toBe("centos")
+    expect(osIcon("FreeBSD 14.1")).toBe("freebsd")
+    expect(osIcon("某未知系统")).toBeNull()
   })
 })
