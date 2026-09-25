@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Mochi 设计令牌：运河夜航配色（深蓝夜幕 + 琥珀金）+ 玻璃卡片，亮暗双套 */
+:root {
+  --bg: #f7f3ea;
+  --bg-soft: #f0e9d8;
+  --card: rgba(255, 255, 255, 0.78);
+  --card-soft: rgba(250, 246, 236, 0.85);
+  --border: #e3dac4;
+  --fg: #372e1c;
+  --fg-muted: #8b8064;
+  --primary: #d97706;
+  --primary-strong: #b45309;
+  --primary-soft: #fbeed6;
+  --on-primary: #ffffff;
+  --good: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
+  --ring: rgba(217, 119, 6, 0.35);
+  --chart-grid: #e3dac4;
+  --veil: linear-gradient(180deg, rgba(247, 243, 234, 0.82), rgba(240, 233, 216, 0.9));
+}
+
+.dark {
+  --bg: #0a1122;
+  --bg-soft: #0e1830;
+  --card: rgba(17, 28, 54, 0.72);
+  --card-soft: rgba(28, 42, 78, 0.6);
+  --border: #26365e;
+  --fg: #eaeffc;
+  --fg-muted: #93a3c7;
+  --primary: #fbbf24;
+  --primary-strong: #f59e0b;
+  --primary-soft: #3a2c10;
+  --on-primary: #241500;
+  --good: #4ade80;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --ring: rgba(251, 191, 36, 0.4);
+  --chart-grid: #26365e;
+  --veil: linear-gradient(180deg, rgba(10, 17, 34, 0.66), rgba(8, 13, 28, 0.88));
+}
+
+/* 强调色预设（theme.json config: accent） */
+html[data-accent="blue"] {
+  --primary: #3b82f6;
+  --primary-strong: #2563eb;
+  --primary-soft: #dbeafe;
+  --ring: rgba(59, 130, 246, 0.35);
+}
+html[data-accent="blue"].dark {
+  --primary: #60a5fa;
+  --primary-strong: #93c5fd;
+  --primary-soft: #172a4a;
+  --on-primary: #0a1830;
+}
+html[data-accent="purple"] {
+  --primary: #8b5cf6;
+  --primary-strong: #7c3aed;
+  --primary-soft: #ede9fe;
+  --ring: rgba(139, 92, 246, 0.35);
+}
+html[data-accent="purple"].dark {
+  --primary: #a78bfa;
+  --primary-strong: #c4b5fd;
+  --primary-soft: #2b1f4d;
+  --on-primary: #150b30;
+}
+html[data-accent="green"] {
+  --primary: #10b981;
+  --primary-strong: #059669;
+  --primary-soft: #d1fae5;
+  --ring: rgba(16, 185, 129, 0.35);
+}
+html[data-accent="green"].dark {
+  --primary: #34d399;
+  --primary-strong: #6ee7b7;
+  --primary-soft: #0c2e26;
+  --on-primary: #04211a;
+}
+html[data-accent="pink"] {
+  --primary: #ec4899;
+  --primary-strong: #db2777;
+  --primary-soft: #fce7f3;
+  --ring: rgba(236, 72, 153, 0.35);
+}
+html[data-accent="pink"].dark {
+  --primary: #f472b6;
+  --primary-strong: #fb7185;
+  --primary-soft: #3b1d33;
+  --on-primary: #2a0a1c;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+  --color-card: var(--card);
+  --color-card-soft: var(--card-soft);
+  --color-line: var(--border);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --font-sans:
+    "Inter", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei",
+    system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  --radius-card: 1rem;
+}
+
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 运河夜景背景 + 色调纱罩（fixed 层，避免移动端 background-attachment 抖动） */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(1200px 420px at 15% -8%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 70%),
+    var(--veil),
+    url("/assets/bg.jpg");
+  background-position: center, center, center;
+  background-size: auto, auto, cover;
+  background-repeat: no-repeat;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--fg-muted) 35%, transparent);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 隐藏滚动条但保留滚动（分组 tabs 用） */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 卡片通用悬浮反馈 */
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  box-shadow: 0 10px 30px -12px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+/* 弹窗进出场 */
+@keyframes mochi-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes mochi-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-pop {
+  animation: mochi-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.animate-fade {
+  animation: mochi-fade 0.18s ease-out;
+}
+
+@keyframes mochi-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.animate-dot {
+  animation: mochi-pulse 1.6s ease-in-out infinite;
+}
