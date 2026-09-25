@@ -136,3 +136,36 @@ export function osEmoji(os: string | undefined): string {
   if (s.includes("android")) return "🤖"
   return "🐧"
 }
+
+/** os 字符串 → 内置系统 Logo（public/assets/os/<key>.svg），匹配不到返回 null 回退 emoji */
+const OS_RULES: [RegExp, string][] = [
+  // 具体发行版在前，泛称在后；darwin/macos 必须先于 windows
+  [/almalinux|alma/i, "almalinux"],
+  [/rocky/i, "rocky"],
+  [/centos/i, "centos"],
+  [/ubuntu/i, "ubuntu"],
+  [/kali/i, "kali"],
+  [/raspbian|raspberry/i, "raspbian"],
+  [/red\s*hat|redhat|rhel/i, "rhel"],
+  [/fedora/i, "fedora"],
+  [/gentoo/i, "gentoo"],
+  [/nixos/i, "nixos"],
+  [/openwrt/i, "openwrt"],
+  [/deepin|\buos\b/i, "linux"],
+  [/opensuse|suse/i, "opensuse"],
+  [/oracle/i, "oracle"],
+  [/proxmox|\bpve\b/i, "proxmox"],
+  [/arch/i, "arch"],
+  [/alpine/i, "alpine"],
+  [/freebsd/i, "freebsd"],
+  [/docker/i, "docker"],
+  [/darwin|mac\s?os|macos|apple|ios/i, "macos"],
+  [/windows|win\s?1[01]|win32|win64/i, "windows"],
+  [/linux|gnu/i, "linux"],
+]
+
+export function osIcon(os: string | undefined): string | null {
+  const s = os || ""
+  for (const [re, key] of OS_RULES) if (re.test(s)) return key
+  return null
+}

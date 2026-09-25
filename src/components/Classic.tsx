@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import type { Node } from "@/lib/types"
-import { bytes, bps, osEmoji, pct, uptime } from "@/lib/format"
+import { bytes, bps, pct, uptime } from "@/lib/format"
 import { Badge, Card, Progress, StatusDot } from "@/components/ui"
-import { ExpiryBadge, NetRow, PriceTag, TrafficHint, UptimeHint, ValueButton } from "./parts"
+import { ExpiryBadge, NetRow, OsLogo, PriceTag, TrafficHint, UptimeHint, ValueButton } from "./parts"
 import { flagEmoji } from "@/lib/format"
 
 /** Classic 视图：官方默认风格的列表（还原 monitor 官方列表观感） */
@@ -21,7 +21,7 @@ export function ClassicView({ nodes }: { nodes: Node[] }) {
             <StatusDot online={n.online} size={7} />
             <span className="text-[13px]">{flagEmoji(n.country)}</span>
             <span className="truncate text-sm font-semibold">{n.name}</span>
-            <span className="text-[11px] opacity-70">{osEmoji(n.os)}</span>
+            <OsLogo os={n.os} className="h-3.5 w-3.5 opacity-80" />
             {n.group ? <Badge>{n.group}</Badge> : null}
           </div>
 
@@ -109,7 +109,7 @@ export function DetailedView({ nodes }: { nodes: Node[] }) {
                     <StatusDot online={n.online} size={7} />
                     <span>{flagEmoji(n.country)}</span>
                     <span className="font-semibold">{n.name}</span>
-                    <span className="opacity-70">{osEmoji(n.os)}</span>
+                    <OsLogo os={n.os} className="h-3.5 w-3.5 opacity-80" />
                     <span className="text-[10px] text-fg-muted">{n.cpu_cores}C · {bytes(n.mem_total, 0)}</span>
                   </span>
                 </td>

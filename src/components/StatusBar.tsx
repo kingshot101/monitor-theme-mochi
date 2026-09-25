@@ -8,7 +8,7 @@ import { Badge, Button, Segmented, Select, Sparkline, StatusDot, cx } from "@/co
 
 export function StatusBar() {
   const { t } = useTranslation()
-  const { me, search, setSearch, sort, setSort, mode, setMode, lang, toggleLang, group } = useApp()
+  const { me, search, setSearch, sort, setSort, mode, setMode, lang, toggleLang, group, cfgStr } = useApp()
   const { nodes, live } = useNodes()
 
   // 汇总数字跟随当前分组（搜索不影响汇总）
@@ -27,8 +27,8 @@ export function StatusBar() {
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
         {/* 站名 + 状态 */}
         <div className="flex min-w-0 items-center gap-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-lg">
-            🍡
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-primary/15">
+            <img src={cfgStr("icon_url", "/favicon.svg")} alt="" className="h-6 w-6 object-contain" />
           </div>
           <div className="min-w-0">
             <div className="truncate text-[15px] leading-5 font-bold">

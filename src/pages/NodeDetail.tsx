@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next"
 import { ArrowLeft, Cpu, Gauge, Globe2, Info, MemoryStick, Network, Server } from "lucide-react"
 import { fetchHistory, startLive, useNodes } from "@/lib/api"
 import type { History, Node, RangeKey } from "@/lib/types"
-import { bytes, bps, cycleLabel, dateTimeStr, flagEmoji, money, osEmoji, pct, uptime } from "@/lib/format"
+import { bytes, bps, cycleLabel, dateTimeStr, flagEmoji, money, pct, uptime } from "@/lib/format"
 import { Badge, Button, Card, Progress, Segmented, Skeleton, StatusDot } from "@/components/ui"
 import { MetricCharts, PingChart, probeColor } from "@/components/charts"
-import { PriceTag, UptimeHint } from "@/components/parts"
+import { OsLogo, PriceTag, UptimeHint } from "@/components/parts"
 import { ValueButton } from "@/value/ValueButton"
 import { allocation, computeValue, mergePrice, periodTraffic, urgency } from "@/value/calc"
 import { getOverride } from "@/value/store"
@@ -114,7 +114,7 @@ function Detail({ node }: { node: Node }) {
           <StatusDot online={node.online} size={10} />
           <span className="text-xl">{flagEmoji(node.country)}</span>
           <h1 className="text-lg font-bold">{node.name}</h1>
-          <span className="text-base">{osEmoji(node.os)}</span>
+          <OsLogo os={node.os} className="h-5 w-5" />
           {node.group && <Badge>{node.group}</Badge>}
           <Badge>{node.arch}</Badge>
           <Badge>{node.virt}</Badge>

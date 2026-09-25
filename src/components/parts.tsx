@@ -1,22 +1,43 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { Node } from "@/lib/types"
-import { bytes, bps, cycleLabel, flagEmoji, money, osEmoji, pct, uptime } from "@/lib/format"
-import { Badge, Progress, StatusDot } from "@/components/ui"
+import { bytes, bps, cycleLabel, flagEmoji, money, osEmoji, osIcon, pct, uptime } from "@/lib/format"
+import { Badge, Progress, StatusDot, cx } from "@/components/ui"
 import { periodTraffic } from "@/value/calc"
 import { getOverride } from "@/value/store"
 import { ValueButton } from "@/value/ValueButton"
 import { ExpiryBadge } from "@/value/ValueButton"
 
-/** 节点名行：国旗 + 名称 + 系统 emoji + 状态点 */
+/** 系统 Logo 图（内置 /assets/os/，匹配不到或加载失败回退 emoji） */
+export function OsLogo({ os, className }: { os: string | undefined; className?: string }) {
+  const key = osIcon(os)
+  const [failed, setFailed] = useState(false)
+  if (!key || failed)
+    return (
+      <span className={cx("leading-none", className)} title={os}>
+        {osEmoji(os)}
+      </span>
+    )
+  return (
+    <img
+      src={`/assets/os/${key}.svg`}
+      alt={os || ""}
+      title={os}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className={cx("os-logo shrink-0 object-contain", className)}
+    />
+  )
+}
+
+/** 节点名行：国旗 + 名称 + 系统 Logo + 状态点 */
 export function NodeName({ node, bold = true }: { node: Node; bold?: boolean }) {
   return (
     <span className="flex min-w-0 items-center gap-1.5">
       <StatusDot online={node.online} size={7} />
       <span className="shrink-0 text-[13px] leading-none">{flagEmoji(node.country)}</span>
       <span className={`truncate ${bold ? "font-semibold" : ""}`}>{node.name}</span>
-      <span className="shrink-0 text-[11px] opacity-70" title={node.os}>
-        {osEmoji(node.os)}
-      </span>
+      <OsLogo os={node.os} className="h-3.5 w-3.5 opacity-80" />
     </span>
   )
 }
