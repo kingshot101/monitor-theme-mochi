@@ -2,7 +2,7 @@
   "name": "Mochi",
   "short": "mochi",
   "description": "Another monitor theme inspired by komari-web-mochi — six views, price tags, and a remaining-value module.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Mochi for monitor",
   "url": "https://github.com/kingshot101/monitor-theme-mochi",
   "config": [
