@@ -22,6 +22,10 @@ function featureCC(f: CountryFeature): string | null {
   return hit ? hit[0] : null
 }
 
+// 一个中国：港澳台的节点并入中国的高亮（标点仍按各自位置显示）
+const GREATER_CN = new Set(["HK", "MO", "TW"])
+const highlightCC = (cc: string) => (GREATER_CN.has(cc) ? "CN" : cc)
+
 /** 国家高亮配色：淡色填充 + 同色发光边框（与标点状态一致） */
 function highlightColors(p: CountryPoint): [string, string] {
   if (p.online === 0) return ["rgba(239, 68, 68, 0.14)", "rgba(239, 68, 68, 0.9)"]
@@ -145,13 +149,25 @@ export default function EarthInner({ nodes }: { nodes: Node[] }) {
   useEffect(() => {
     const globe = globeRef.current
     if (!globe || !world || !ready) return
-    const status = new Map(points.map((p) => [p.cc, p]))
+    // 港澳台与大陆合并统计在线状态，作为「中国」整体高亮
+    const status = new Map<string, CountryPoint>()
+    for (const p of points) {
+      const key = highlightCC(p.cc)
+      const cur = status.get(key)
+      if (cur) {
+        cur.count += p.count
+        cur.online += p.online
+        cur.names.push(...p.names)
+      } else {
+        status.set(key, { ...p, cc: key })
+      }
+    }
     const highlights = world.filter((f) => {
       const cc = featureCC(f)
-      return cc != null && status.has(cc)
+      return cc != null && status.has(highlightCC(cc))
     })
     const colorsOf = (f: CountryFeature): [string, string] => {
-      const p = status.get(featureCC(f) ?? "")
+      const p = status.get(highlightCC(featureCC(f) ?? ""))
       return p ? highlightColors(p) : ["rgba(0,0,0,0)", "rgba(0,0,0,0)"]
     }
     globe.polygonsData(highlights)
