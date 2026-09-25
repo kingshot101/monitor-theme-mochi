@@ -14,8 +14,10 @@
   - 浮动菜单 → **剩余价值总览**：全部节点按临期排序、按货币小计、手动汇率折算基准货币
   - 后台可用 `show_value_module` 配置整体关闭
 - **视觉**：运河夜景照片背景（打包内置 `dist/assets/bg.jpg`，深蓝夜幕 + 琥珀金色调，暗色透出夜景、亮色为暖奶油纱罩）+ 半透明毛玻璃卡片；强调色五选一，图表折线、CPU 曲线与 3D 地球大气层跟随强调色
+- **真实系统 Logo**：节点名旁显示发行版官方图标（内置 24 个：Debian/Ubuntu/CentOS/Rocky/AlmaLinux/Alpine/Arch/Fedora/RHEL/FreeBSD/openSUSE/Kali/Gentoo/NixOS/OpenWrt/Deepin/Oracle/Proxmox/树莓派/Docker/Windows/macOS 等，全部本地打包不依赖外网），按节点 `os` 字段自动匹配，未知系统回退 emoji，暗色下自动提亮
+- **站点 Logo**：顶栏站名旁显示主题内置 Logo；后台升级后可在「主题设置 → 网站图标（ICON）」填图片地址，顶栏与浏览器标签页图标会一并替换
 - **状态处理**：离线节点单独折叠在底部、metrics 缺失显示"不可用"、已过期红色徽章、未设置到期显示"长期"
-- **其余**：后台可自定义**网站图标（ICON）**、分组 tabs（跟随节点顺序、汇总数字随分组）、搜索、七种排序、亮/暗色、中英双语、移动端适配、公告栏、PWA manifest
+- **其余**：分组 tabs（跟随节点顺序、汇总数字随分组）、搜索、七种排序、亮/暗色、中英双语、移动端适配、公告栏、PWA manifest
 
 ## 安装
 
@@ -42,6 +44,8 @@ monitor 后台 → 主题 → 上传 `mochi-theme.tar.gz` 并启用。包内 `th
 | `footer_text` | text | — | 页脚文本，留空显示默认页脚 |
 
 设置经 `GET/PUT /api/themes/mochi/config` 读写（只存改过的键，与 `theme.json` 默认值合并）。
+
+> **注意**：设置弹窗需要较新的 hub 版本（旧版 hub 会忽略主题的 `config` 声明，卡片上不会出现「主题设置」滑杆按钮）。Docker 部署升级：`docker compose pull && docker compose up -d`（或 `docker pull ghcr.io/monitor-probe/monitor:latest` 后重建容器），主题与数据在挂载卷中不受影响。
 
 ## 剩余价值折算口径
 

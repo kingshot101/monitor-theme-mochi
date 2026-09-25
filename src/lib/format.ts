@@ -137,7 +137,11 @@ export function osEmoji(os: string | undefined): string {
   return "🐧"
 }
 
-/** os 字符串 → 内置系统 Logo（public/assets/os/<key>.svg），匹配不到返回 null 回退 emoji */
+/** os 字符串 → 内置系统图标路径（含扩展名），匹配不到返回 null 回退 emoji */
+export function osIconPath(os: string | undefined): string | null {
+  const key = osIcon(os)
+  return key ? `/assets/os/${key}${OS_ICON_EXT[key] ?? ".svg"}` : null
+}/** os 字符串 → 内置系统 Logo key，匹配不到返回 null */
 const OS_RULES: [RegExp, string][] = [
   // 具体发行版在前，泛称在后；darwin/macos 必须先于 windows
   [/almalinux|alma/i, "almalinux"],
@@ -151,7 +155,7 @@ const OS_RULES: [RegExp, string][] = [
   [/gentoo/i, "gentoo"],
   [/nixos/i, "nixos"],
   [/openwrt/i, "openwrt"],
-  [/deepin|\buos\b/i, "linux"],
+  [/deepin|\buos\b/i, "deepin"],
   [/opensuse|suse/i, "opensuse"],
   [/oracle/i, "oracle"],
   [/proxmox|\bpve\b/i, "proxmox"],
@@ -169,3 +173,6 @@ export function osIcon(os: string | undefined): string | null {
   for (const [re, key] of OS_RULES) if (re.test(s)) return key
   return null
 }
+
+/** 个别只有 PNG 的图标（deepin 用 GitHub 头像源） */
+const OS_ICON_EXT: Record<string, string> = { deepin: ".png" }

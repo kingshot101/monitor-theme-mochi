@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import type { Node } from "@/lib/types"
-import { bytes, bps, cycleLabel, flagEmoji, money, osEmoji, osIcon, pct, uptime } from "@/lib/format"
+import { bytes, bps, cycleLabel, flagEmoji, money, osEmoji, osIconPath, pct, uptime } from "@/lib/format"
 import { Badge, Progress, StatusDot, cx } from "@/components/ui"
 import { periodTraffic } from "@/value/calc"
 import { getOverride } from "@/value/store"
@@ -10,9 +10,9 @@ import { ExpiryBadge } from "@/value/ValueButton"
 
 /** 系统 Logo 图（内置 /assets/os/，匹配不到或加载失败回退 emoji） */
 export function OsLogo({ os, className }: { os: string | undefined; className?: string }) {
-  const key = osIcon(os)
+  const src = osIconPath(os)
   const [failed, setFailed] = useState(false)
-  if (!key || failed)
+  if (!src || failed)
     return (
       <span className={cx("leading-none", className)} title={os}>
         {osEmoji(os)}
@@ -20,7 +20,7 @@ export function OsLogo({ os, className }: { os: string | undefined; className?: 
     )
   return (
     <img
-      src={`/assets/os/${key}.svg`}
+      src={src}
       alt={os || ""}
       title={os}
       loading="lazy"
